@@ -1,0 +1,85 @@
+/menuManage/menuList.do
+가 메뉴관리 url
+
+컨트롤러 어노테이션을 설정했는데도 요청에 매핑이 안되는 상황. 왜?
+--> 없었음 그냥 넣어주니까 됨
+
+getmenuDataAjax.do요청이 404가 뜸.
+
+경로는 맞는데 얘가 문제임
+List<?> menuList = menuManageService.selectMenuList(searchVO);
+xml이 없었음. 해결
+
+얘도 안됨.
+/menuManage/menuFormAjax.do
+500번에
+
+
+<%@ taglib prefix="double-submit" uri="http://www.egovframe.go.kr/tags/double-submit/jsp" %>
+해결함. 파일들이 없었음
+
+
+테이블 생성완료
+마스터가 게시판, 디테일이 게시물
+
+CREATE TABLE `silla_ctb_bbsmst` (
+	`BBS_MANAGE_ID` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '게시판 고유 아이디',
+	`BBS_ID` VARCHAR(30) NOT NULL COMMENT '게시판마스터아이디' COLLATE 'utf8mb4_unicode_ci',
+	`BBS_NAME` VARCHAR(50) NOT NULL COMMENT '게시판이름' COLLATE 'utf8mb4_unicode_ci',
+	`BBS_TYPE` VARCHAR(10) NOT NULL COMMENT '게시판타입' COLLATE 'utf8mb4_unicode_ci',
+	`USE_YN` VARCHAR(10) NOT NULL COMMENT '사용여부' COLLATE 'utf8mb4_unicode_ci',
+	`LIST_COUNT` INT(10) NOT NULL DEFAULT '0' COMMENT '목록갯수',
+	`FILE_YN` VARCHAR(10) NULL DEFAULT 'N' COMMENT '첨부파일 사용여부' COLLATE 'utf8mb4_general_ci',
+	`FILE_COUNT` INT(11) NULL DEFAULT NULL COMMENT '첨부파일 사용갯수',
+	`REG_ID` VARCHAR(30) NOT NULL COMMENT '등록자' COLLATE 'utf8mb4_unicode_ci',
+	`REG_DT` DATETIME NOT NULL COMMENT '등록일',
+	`UPD_ID` VARCHAR(30) NULL DEFAULT NULL COMMENT '수정자' COLLATE 'utf8mb4_unicode_ci',
+	`UPD_DT` DATETIME NULL DEFAULT NULL COMMENT '수정일',
+	`DEL_YN` VARCHAR(10) NOT NULL COMMENT '삭제여부' COLLATE 'utf8mb4_general_ci',
+	PRIMARY KEY (`BBS_MANAGE_ID`) USING BTREE,
+	UNIQUE INDEX `BBS_ID` (`BBS_ID`) USING BTREE
+)
+COMMENT='게시판 관리 테이블'
+COLLATE='utf8mb4_unicode_ci'
+ENGINE=InnoDB
+ROW_FORMAT=DYNAMIC
+AUTO_INCREMENT=3
+;
+
+CREATE TABLE `silla_ctb_bbsdtls` (
+	`BBS_ARTICLE_ID` INT(11) NOT NULL AUTO_INCREMENT COMMENT '고유PK',
+	`BBS_ID` VARCHAR(30) NOT NULL COMMENT '게시판마스터아이디' COLLATE 'utf8mb4_unicode_ci',
+	`TITLE` VARCHAR(100) NOT NULL COMMENT '제목' COLLATE 'utf8mb4_unicode_ci',
+	`CONTENT` LONGTEXT NOT NULL COMMENT '내용' COLLATE 'utf8mb4_unicode_ci',
+	`DEL_YN` VARCHAR(10) NOT NULL DEFAULT 'N' COMMENT '삭제여부' COLLATE 'utf8mb4_unicode_ci',
+	`NOTICE_YN` VARCHAR(10) NULL DEFAULT 'N' COMMENT '공지여부' COLLATE 'utf8mb4_unicode_ci',
+	`REG_IP` VARCHAR(30) NULL DEFAULT NULL COMMENT '등록자아이피' COLLATE 'utf8mb4_unicode_ci',
+	`READ_CNT` INT(11) NOT NULL DEFAULT '0' COMMENT '조회수',
+	`ATCH_FILE_ID` VARCHAR(30) NULL DEFAULT NULL COMMENT '첨부파일아이디' COLLATE 'utf8mb4_unicode_ci',
+	`STATUS` VARCHAR(10) NULL DEFAULT NULL COMMENT '상태' COLLATE 'utf8mb4_unicode_ci',
+	`REG_ID` VARCHAR(30) NULL DEFAULT NULL COMMENT '등록자' COLLATE 'utf8mb4_unicode_ci',
+	`REG_DT` DATETIME NOT NULL COMMENT '등록일',
+	`UPD_ID` VARCHAR(30) NULL DEFAULT NULL COMMENT '수정자' COLLATE 'utf8mb4_unicode_ci',
+	`UPD_DT` DATETIME NULL DEFAULT NULL COMMENT '수정일',
+	`PWD` VARCHAR(50) NULL DEFAULT NULL COMMENT '비밀번호' COLLATE 'utf8mb4_unicode_ci',
+	`REG_NAME` VARCHAR(30) NULL DEFAULT NULL COMMENT '등록자명' COLLATE 'utf8mb4_unicode_ci',
+	PRIMARY KEY (`BBS_ARTICLE_ID`) USING BTREE
+)
+COMMENT='게시판'
+COLLATE='utf8mb4_unicode_ci'
+ENGINE=InnoDB
+ROW_FORMAT=DYNAMIC
+AUTO_INCREMENT=3
+;
+
+--게시판 등록 쿼리
+INSERT INTO silla_ctb_bbsmst(bbs_id, bbs_name, bbs_type, use_yn, list_count, file_yn, file_count, reg_id, reg_dt, upd_id, upd_dt, del_yn)
+VALUES (1, '조회테스트', 'BTYPE_01', 'Y', 10, 'N', 1, 'system', '2025-03-19 14:27:23', 'system', '2025-03-19 14:28:00', 'N');
+
+
+list.jsp	--> 게시판 리스트
+bbsManage/regForm.jsp --> 게시판 등록
+
+/ctbBoardManage/ctbBbsManageWriteAjax.do
+
+SILLA_BBS_MANAGER테이블은 새로 안만듦 그대로 사용가능

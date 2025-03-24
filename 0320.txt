@@ -1,0 +1,103 @@
+게시물 테이블명 SILLA_BBS
+
+게시물 프라이머리 키 값 가져오기
+SELECT /* ctbBbsArticleDAO.insertBbsArticle */ 
+		AUTO_INCREMENT 
+FROM INFORMATION_SCHEMA.TABLES 
+WHERE TABLE_NAME = 'silla_ctb_bbsdtls'
+
+게시물 인서트 문
+INSERT INTO /* ctbBbsArticleDAO.insertBbsArticle */ silla_ctb_bbsdtls (
+            BBS_ID
+            ,TITLE
+            ,CONTENT
+            ,DEL_YN
+            ,NOTICE_YN
+            ,REG_IP
+            ,READ_CNT
+            ,ATCH_FILE_ID
+            ,STATUS
+            ,REG_ID
+            ,REG_DT
+            ,UPD_ID
+            ,UPD_DT
+        ) VALUES (
+             #{bbsSeq}
+            ,#{bbsId}
+            ,#{title}
+            ,#{content}
+            ,IFNULL(#{delYn}, 'N')
+            ,IFNULL(#{noticeYn}, 'N')
+            ,IFNULL(#{regIp}, 'N')
+            ,0
+            ,#{atchFileId}
+            ,IFNULL(#{status}, 'Y')
+            ,#{regId}
+            ,now()
+            ,#{updId}
+            ,now()
+        );
+
+
+날짜 이상하게 출력되는 문제발견
+
+1시도
+STR_TO_DATE(CONCAT(REG_DT ,'23:59:59'),'%Y-%m-%d %H:%i:%S')
+안됨 어떻게 해도 .0이 붙어버림.
+그런데 원래페이지도 그렇게 돼 있어 의도된 건가 싶어 더 수정안함.
+
+
+
+게시글 등록 문제상황
+1. 파라미터는 넘어오는데, 
+인서트문이 실행되는지 안되는지 확실하게 모르겠음.
+--> service 설정문제였음
+
+게시물 단건조회
+
+게시글 등록
+1. 등록시 html코드가 escape되는 문제발견
+ jpEditors.getById["contentsJp"].exec("PASTE_HTML", ["기존 DB에 저장된 내용을 에디터에 적용할 문구"]); 
+이 코드 적용하라고 돼 있었으나, 적용안됨
+
+해결방법
+1) db에 쿼리 생성
+UPDATE silla_ctb_bbsdtls
+SET content = REPLACE(REPLACE(REPLACE(content, '&lt;', '<'), '&gt;', '>'), '&quot;', '"');
+-- 뭔가.. db에서 작업을 더 한다는게 안맞는 것 같음
+
+2) controller에서 replace함수를 사용하여 문자열 모두 변환
+
+
+게시글 수정
+수정이 안됨. 
+쿼리가 실행되는지 알수가 없어서 일부러 오류가 나도록 sql문에서 ,를 뺌
+그러니 bbsArticleId이 null이었다는 사실을 발견
+form태그에서 bbsArticleId을 넘기지 않고 있다는 사실 발견. 해결
+
+
+게시글 리스트에는 파일이름
+게시글 단건조회에서 클릭했을 때 다운로드
+
+
+게시글 관리메뉴가 하나 더 생기는데, 이거 없애려면 메뉴 관리에서 메뉴 삭제하고,
+요청 url모두 다 수정해야됨.. ---> /ctbBbsArticle/이부분
+난리날듯
+
+
+jstl문법
+== : eq
+
+!= : ne
+
+< : lt
+
+> : gt
+
+<= : le
+
+>= : ge
+
+파일 저장 하는 정보 담은 db
+마스터 : silla_file_mast
+디테일 : silla_file_dtl

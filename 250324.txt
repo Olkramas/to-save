@@ -1,0 +1,59 @@
+1. 액셀 파일 받는지 확인(request 확인)
+
+서비스 impl에서 데이터를 애초에 못 받는중
+아무 반응도 없어보임
+1) 서비스 작동은 됨.
+
+2)
+CommonsMultipartFile file = (CommonsMultipartFile)multiRequest.getFile("excelFile");이 널이라서 아무 반응이 없을 수 있음
+아니였다
+
+MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;이게 뭔가 문제 있는듯 이 밑에 코드 아무것도 작동안됨.
+
+request의 클래스가 HttpServletRequest가 아니었다. 요청을 받을때 HTMLTagFilterRequestWrapper클래스로 감싸지게 되어
+다른 클래스가 넘어와서 정보를 받지 못했던 것.
+
+if (originalRequest instanceof HTMLTagFilterRequestWrapper) {
+    	    originalRequest = (HttpServletRequest) ((HTMLTagFilterRequestWrapper) originalRequest).getRequest();
+    	}
+위 코드를 통해 오리지널 request로 캐스팅
+
+내부 내용 읽기 성공!!
+
+
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: formData,
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        enctype: 'multipart/form-data',
+        success: function(data){
+        	
+        },
+        error:function(request,status,error){
+            alert("업로드에 실패하였습니다. : "+request+" status : "+status+" error : "+error);
+        }
+    });
+
+아작스 통신을 하고 있어서 화면 전환이 안되고 있었음 어이없는 실수
+
+
+첨부파일 첨부 후 새로고침되면서 첨부파일명이 안보이는 문제.
+--> 시간나면 해결해보기
+
+
+---------------------
+값들 모두 가져왔음
+
+map의 키 값을 리스트에 담아서 하나씩 값을 뺀다음 
+그 뺀 값을 하나의 객체로 만들어서 해야될듯.
+
+{pageIndex=1, content3=테스트내용4, content2=테스트내용3, bbsType=BTYPE_01, content1=테스트내용2, title0=테스트제목1, content0=테스트내용1, title1=테스트제목2, title2=테스트제목3, title3=테스트제목4, bbsId=forPage10}
+
+--> 액셀 업로드 완료
+
+
+액셀 다운로드 하기
+1. 검색 조건 그대로 가져가서 db에서 검색해야함.
